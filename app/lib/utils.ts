@@ -1,7 +1,12 @@
 //This function formats a file size in bytes to a human-readable string (KB,MB,GB)
 //@param bytes: the size in bytes
 //@returns a formatted string with the appropriate unit
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 export function formatSize(bytes: number) {
   if (bytes == 0) return "0 Bytes";
   const k = 1024;

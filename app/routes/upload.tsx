@@ -30,6 +30,13 @@ const Upload = () => {
   }) => {
     setIsProcessing(true);
     setStatusText("uploading the file...");
+    // Sanitize filename before uploading
+    const sanitizedFile = new File(
+      [file],
+      file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_"),
+      { type: file.type },
+    );
+
     //upload file to puter storage
     const uploadedFile = await fs.upload([file]);
     if (!uploadedFile) return setStatusText("Error: Failed to upload file");
@@ -62,7 +69,7 @@ const Upload = () => {
     await kv.set(`resume:&{uuid}`, JSON.stringify(data));
     setStatusText("Analyzing ...");
     const feedback = await ai.feedback(
-      uploadedFile.path,
+      uploadedImage.path,
       prepareInstructions({ jobTitle, jobDescription }),
     );
     if (!feedback) return setStatusText("Error: Failed to Analyze resume");
@@ -72,6 +79,7 @@ const Upload = () => {
         : feedback.message.content[0].text;
 
     data.feedback = JSON.parse(feedbackText);
+
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
     setStatusText("Analysis complete, redirecting...");
     console.log(data);
